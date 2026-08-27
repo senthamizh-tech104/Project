@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Skill Assessment & Quiz — SkillSphere AI{% endblock %}
+
+{% block content %}
+<!-- QUICK PAGE GUIDE BANNER -->
+<div class="page-guide-banner">
+    <i class="bi bi-lightbulb-fill"></i>
+    <div>
+        <strong>Skill Assessment:</strong> Test your core software engineering knowledge across Python, SQL, Machine Learning, and Cloud Architecture. Score 50%+ to pass and earn <strong>+60 XP</strong>.
+    </div>
+</div>
+
+<div class="mb-4">
+    <h2 class="fw-bold mb-1">Skill Assessment & Knowledge Check 📝</h2>
+    <p class="text-muted mb-0">Evaluate your technical competencies and validate your learning outcomes.</p>
+</div>
+
+{% if submitted %}
+<!-- RESULT CARD -->
+<div class="card p-4 text-center mb-4 border-0 shadow-sm {% if result == 'Passed' %}bg-success-soft text-success{% else %}bg-danger-soft text-danger{% endif %}">
+    <div class="display-4 mb-2">
+        {% if result == 'Passed' %}
+        <i class="bi bi-award-fill text-success"></i>
+        {% else %}
+        <i class="bi bi-arrow-repeat text-danger"></i>
+        {% endif %}
+    </div>
+    <h3 class="fw-bold">Assessment {{ result }}!</h3>
+    <p class="fs-5 mb-3">You scored <strong>{{ score }} out of {{ total }}</strong> ({{ percentage }}%)</p>
+    <div class="d-flex justify-content-center gap-2">
+        <a href="{{ url_for('assessment') }}" class="btn btn-outline-brand btn-sm">Retake Quiz</a>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-brand btn-sm">Back to Dashboard</a>
+    </div>
+</div>
+{% endif %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="card p-4 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                <span class="fw-bold text-primary-brand"><i class="bi bi-patch-question me-1"></i> Multiple Choice Test</span>
+                <span class="badge bg-primary-soft text-primary-brand">{{ questions|length }} Questions</span>
+            </div>
+
+            <form method="POST" action="{{ url_for('assessment') }}">
+                {% for q in questions %}
+                {% set q_index = loop.index0 %}
+                <div class="mb-4 p-3 rounded-3 bg-body-tertiary">
+                    <h6 class="fw-bold mb-3">{{ loop.index }}. {{ q.question }}</h6>
+                    <div class="d-flex flex-column gap-2">
+                        {% for opt in q.options %}
+                        <div class="form-check p-2 rounded-2 border bg-white" style="background-color: var(--card-bg) !important;">
+                            <input class="form-check-input ms-1 me-2" type="radio" name="q{{ q_index }}" id="q{{ q_index }}_{{ loop.index0 }}" value="{{ opt }}" required>
+                            <label class="form-check-label w-100" for="q{{ q_index }}_{{ loop.index0 }}">
+                                {{ opt }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-brand btn-lg w-100 py-3 mt-2">
+                    <i class="bi bi-send-check me-1"></i> Submit Assessment & View Results (+60 XP)
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
