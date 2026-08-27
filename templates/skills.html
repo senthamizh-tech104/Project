@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block title %}Skill DNA & AI Gap Analysis — SkillSphere AI{% endblock %}
+
+{% block content %}
+<!-- QUICK PAGE GUIDE BANNER -->
+<div class="page-guide-banner">
+    <i class="bi bi-lightbulb-fill"></i>
+    <div>
+        <strong>Skill DNA & Gap Analysis:</strong> Visualize your current technical proficiencies on the radar chart and run AI gap analysis against target engineering roles to get personalized course recommendations.
+    </div>
+</div>
+
+<div class="mb-4">
+    <h2 class="fw-bold mb-1">Skill DNA & AI Gap Analysis 🧬</h2>
+    <p class="text-muted mb-0">Evaluate your current competencies and identify the exact skills required for your target career role.</p>
+</div>
+
+<div class="row g-4">
+    <!-- LEFT: SKILL DNA RADAR & SCORES -->
+    <div class="col-lg-6">
+        <div class="card p-4 h-100 shadow-sm">
+            <h5 class="fw-bold mb-3"><i class="bi bi-diagram-3-fill me-2 text-primary-brand"></i>Your Skill Competency Radar</h5>
+            <div style="position: relative; height: 300px;">
+                <canvas id="skillsPageRadar"></canvas>
+            </div>
+
+            <div class="mt-4 pt-3 border-top">
+                <h6 class="fw-bold mb-3">Individual Skill Breakdown</h6>
+                <div class="d-flex flex-column gap-3">
+                    {% for s in skills %}
+                    <div>
+                        <div class="d-flex justify-content-between small fw-semibold mb-1">
+                            <span>{{ s.name }}</span>
+                            <span>{{ s.score }}%</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar {% if s.score >= 80 %}bg-success{% elif s.score >= 60 %}bg-primary{% else %}bg-warning{% endif %}" style="width: {{ s.score }}%;"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT: AI SKILL GAP ANALYZER -->
+    <div class="col-lg-6">
+        <div class="card p-4 h-100 shadow-sm">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <div class="badge bg-primary-soft text-primary-brand fs-6 p-2 rounded-circle">
+                    <i class="bi bi-stars"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-0">AI Skill Gap Analyzer</h5>
+                    <span class="text-muted small">Powered by Gemini AI</span>
+                </div>
+            </div>
+            <p class="text-muted small mb-4">Enter your current capabilities and target role. Our AI will compute the missing competencies and recommend an optimal learning path.</p>
+
+            <form id="gapForm">
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Your Current Skills</label>
+                    <input type="text" id="currentSkillsInput" class="form-control" placeholder="e.g. Python, SQL, Basic Git" value="{{ skills|map(attribute='name')|join(', ') }}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Target Engineering Role</label>
+                    <input type="text" id="requiredSkillsInput" class="form-control" placeholder="e.g. Senior Machine Learning Engineer, Cloud Architect" value="Full-Stack AI & Cloud Engineer" required>
+                </div>
+                <button type="submit" class="btn btn-brand w-100 py-2" id="analyzeBtn">
+                    <i class="bi bi-cpu me-1"></i> Analyze Skill Gap with AI (+20 XP)
+                </button>
+            </form>
+
+            <!-- RESULTS CONTAINER -->
+            <div id="gapResult" class="mt-4 p-3 rounded-3 bg-body-tertiary d-none">
+                <h6 class="fw-bold text-primary-brand mb-2"><i class="bi bi-check2-circle me-1"></i> AI Gap Analysis Results</h6>
+                <div class="mb-2">
+                    <strong class="small text-muted d-block">MISSING SKILLS:</strong>
+                    <span id="missingSkillsText" class="small fw-semibold text-danger"></span>
+                </div>
+                <div class="mb-2">
+                    <strong class="small text-muted d-block">RECOMMENDED COURSES:</strong>
+                    <span id="recommendedCoursesText" class="small fw-semibold text-success"></span>
+                </div>
+                <div>
+                    <strong class="small text-muted d-block">LEARNING ROADMAP:</strong>
+                    <p id="learningPathText" class="small mb-0 text-body"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const ctx = document.getElementById('skillsPageRadar');
+    if (ctx) {
+        const skillLabels = {{ skills|map(attribute='name')|list|tojson }};
+        const skillScores = {{ skills|map(attribute='score')|list|tojson }};
+
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: skillLabels.length ? skillLabels : ['Python', 'SQL', 'AI', 'Cloud'],
+                datasets: [{
+                    label: 'Proficiency Score (%)',
+                    data: skillScores.length ? skillScores : [85, 72, 65, 55],
+                    backgroundColor: 'rgba(37, 99, 235, 0.25)',
+                    borderColor: '#2563EB',
+                    pointBackgroundColor: '#2563EB',
+                    pointBorderColor: '#fff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(100, 116, 139, 0.2)' },
+                        grid: { color: 'rgba(100, 116, 139, 0.15)' },
+                        suggestedMin: 0,
+                        suggestedMax: 100,
+                        ticks: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+
+    const gapForm = document.getElementById('gapForm');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const gapResult = document.getElementById('gapResult');
+
+    gapForm && gapForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const current_skills = document.getElementById('currentSkillsInput').value.trim();
+        const required_skills = document.getElementById('requiredSkillsInput').value.trim();
+
+        analyzeBtn.disabled = true;
+        analyzeBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Analyzing...';
+
+        try {
+            const res = await fetch("{{ url_for('skills_analyze') }}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ current_skills, required_skills })
+            });
+            const data = await res.json();
+
+            document.getElementById('missingSkillsText').textContent = data.missing_skills || 'None identified';
+            document.getElementById('recommendedCoursesText').textContent = data.recommended_courses || 'Check Courses directory';
+            document.getElementById('learningPathText').textContent = data.learning_path || 'Continue practice';
+            gapResult.classList.remove('d-none');
+        } catch (err) {
+            alert('Failed to analyze skills. Please try again.');
+        } finally {
+            analyzeBtn.disabled = false;
+            analyzeBtn.innerHTML = '<i class="bi bi-cpu me-1"></i> Analyze Skill Gap with AI (+20 XP)';
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — SkillSphere AI{% endblock %}
+
+{% block content %}
+<!-- QUICK PAGE GUIDE BANNER -->
+<div class="page-guide-banner">
+    <i class="bi bi-lightbulb-fill"></i>
+    <div>
+        <strong>Dashboard Command Center:</strong> Track your active courses, skill DNA radar, daily learning streak, and launch AI practice tools with one click.
+    </div>
+</div>
+
+<!-- WELCOME & GAMIFICATION HEADER -->
+<div class="card p-4 mb-4 border-0 shadow-sm" style="background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(14, 165, 233, 0.08));">
+    <div class="row align-items-center g-3">
+        <div class="col-md-7">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="badge bg-primary px-3 py-1 rounded-pill">Level {{ gamification.level or 1 }} Specialist</span>
+                <span class="badge bg-warning text-dark px-3 py-1 rounded-pill"><i class="bi bi-fire text-danger me-1"></i>{{ gamification.streak or 1 }} Day Streak</span>
+            </div>
+            <h2 class="fw-bold mb-1">Welcome back, {{ session.name }}! 🚀</h2>
+            <p class="text-muted mb-0">You have earned <strong>{{ gamification.xp or 100 }} XP</strong>. Keep up the daily learning momentum!</p>
+        </div>
+        <div class="col-md-5 d-flex justify-content-md-end gap-2 flex-wrap">
+            <a href="{{ url_for('code_studio') }}" class="btn btn-brand btn-sm">
+                <i class="bi bi-code-slash me-1"></i> AI Code Studio
+            </a>
+            <a href="{{ url_for('interview') }}" class="btn btn-outline-brand btn-sm">
+                <i class="bi bi-mic-fill me-1"></i> Mock Interview
+            </a>
+            <a href="{{ url_for('roadmap') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-map-fill me-1"></i> Career Roadmap
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- METRIC CARDS -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="stat-card card h-100">
+            <div class="stat-icon bg-primary-soft">
+                <i class="bi bi-book-half"></i>
+            </div>
+            <div class="stat-value text-primary-brand">{{ active_courses }}</div>
+            <div class="stat-label">Active Courses</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card card h-100">
+            <div class="stat-icon bg-success-soft">
+                <i class="bi bi-patch-check-fill text-success"></i>
+            </div>
+            <div class="stat-value text-success">{{ certificates }}</div>
+            <div class="stat-label">Certificates Earned</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card card h-100">
+            <div class="stat-icon bg-secondary-soft">
+                <i class="bi bi-lightning-charge-fill text-accent"></i>
+            </div>
+            <div class="stat-value text-accent">{{ skill_score }}%</div>
+            <div class="stat-label">Average Skill DNA</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card card h-100">
+            <div class="stat-icon bg-warning-soft">
+                <i class="bi bi-trophy-fill text-warning"></i>
+            </div>
+            <div class="stat-value text-dark">{{ gamification.xp or 100 }}</div>
+            <div class="stat-label">Total Earned XP</div>
+        </div>
+    </div>
+</div>
+
+<!-- FEATURE QUICK LAUNCHERS -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card p-3 h-100 border-start border-4 border-info">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold mb-0"><i class="bi bi-cpu-fill text-info me-2"></i>AI Code Studio</h6>
+                <span class="badge bg-info-subtle text-info">+35 XP</span>
+            </div>
+            <p class="small text-muted mb-3">Live code editor with instant AI complexity & clean refactoring analysis.</p>
+            <a href="{{ url_for('code_studio') }}" class="btn btn-sm btn-outline-info w-100 mt-auto">Open Studio &rarr;</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 h-100 border-start border-4 border-danger">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold mb-0"><i class="bi bi-mic-fill text-danger me-2"></i>AI Mock Interview</h6>
+                <span class="badge bg-danger-subtle text-danger">+75 XP</span>
+            </div>
+            <p class="small text-muted mb-3">Role-tailored technical interview simulator with instant scoring & feedback.</p>
+            <a href="{{ url_for('interview') }}" class="btn btn-sm btn-outline-danger w-100 mt-auto">Start Practice &rarr;</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 h-100 border-start border-4 border-success">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold mb-0"><i class="bi bi-map-fill text-success me-2"></i>Career Roadmap</h6>
+                <span class="badge bg-success-subtle text-success">+40 XP</span>
+            </div>
+            <p class="small text-muted mb-3">Interactive milestone timeline with portfolio project briefs.</p>
+            <a href="{{ url_for('roadmap') }}" class="btn btn-sm btn-outline-success w-100 mt-auto">View Roadmap &rarr;</a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- RECENT ENROLLMENTS -->
+    <div class="col-lg-7">
+        <div class="card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0"><i class="bi bi-play-circle me-2 text-primary-brand"></i>In-Progress Courses</h5>
+                <a href="{{ url_for('courses') }}" class="small fw-semibold text-primary-brand">View Catalog</a>
+            </div>
+
+            {% if enrollments %}
+            <div class="d-flex flex-column gap-3">
+                {% for item in enrollments %}
+                <div class="border rounded-3 p-3 bg-body-tertiary">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <h6 class="fw-bold mb-1">{{ item.title }}</h6>
+                            <span class="badge bg-primary-soft text-primary-brand me-2">{{ item.type }}</span>
+                            <span class="text-muted small"><i class="bi bi-clock me-1"></i>{{ item.duration }}</span>
+                        </div>
+                        <a href="{{ url_for('learn', course_id=item.course_id) }}" class="btn btn-sm btn-brand">
+                            {{ 'Review' if item.progress == 100 else 'Continue' }} <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="progress flex-grow-1" style="height: 8px;">
+                            <div class="progress-bar {% if item.progress == 100 %}bg-success{% endif %}" role="progressbar" style="width: {{ item.progress }}%;"></div>
+                        </div>
+                        <span class="small fw-bold">{{ item.progress }}%</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-journal-x fs-1 text-muted"></i>
+                <p class="text-muted mt-2 mb-3">You haven't enrolled in any courses yet.</p>
+                <a href="{{ url_for('courses') }}" class="btn btn-brand btn-sm">Browse Courses</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- SKILL DNA CHART & UNLOCKED BADGES -->
+    <div class="col-lg-5">
+        <div class="card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0"><i class="bi bi-diagram-3 me-2 text-accent"></i>Skill DNA Radar</h5>
+                <a href="{{ url_for('skills') }}" class="small fw-semibold text-primary-brand">Analyze</a>
+            </div>
+            <div style="position: relative; height: 230px;">
+                <canvas id="skillRadarChart"></canvas>
+            </div>
+
+            <!-- UNLOCKED BADGES PREVIEW -->
+            <div class="mt-3 pt-3 border-top">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="fw-bold mb-0 small text-muted">EARNED BADGES</h6>
+                    <a href="{{ url_for('leaderboard') }}" class="small text-primary-brand">All Badges</a>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    {% for b in gamification.badges_list %}
+                    <span class="badge bg-primary-soft text-primary-brand border py-2 px-3">
+                        <i class="bi bi-award-fill me-1 text-warning"></i> {{ b }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- RECENT ASSESSMENTS & ACTIVITY -->
+<div class="card p-4 mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0"><i class="bi bi-activity me-2 text-warning"></i>Recent Knowledge Assessments & Practice</h5>
+        <a href="{{ url_for('assessment') }}" class="btn btn-outline-brand btn-sm">Take New Quiz</a>
+    </div>
+    {% if assessments %}
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr class="text-muted small">
+                    <th>ASSESSMENT</th>
+                    <th>SCORE</th>
+                    <th>STATUS</th>
+                    <th>DATE</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in assessments %}
+                <tr>
+                    <td class="fw-semibold">Knowledge Check</td>
+                    <td><span class="badge bg-primary-soft text-primary-brand">{{ a.score }} / 5 pts</span></td>
+                    <td>
+                        {% if a.score >= 3 %}
+                        <span class="badge bg-success-subtle text-success"><i class="bi bi-check-circle me-1"></i>Passed (+60 XP)</span>
+                        {% else %}
+                        <span class="badge bg-danger-subtle text-danger"><i class="bi bi-x-circle me-1"></i>Review Needed</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-muted small">{{ a.taken_at }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-muted small mb-0">No quiz attempts recorded yet. <a href="{{ url_for('assessment') }}">Take your first assessment</a>.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const ctx = document.getElementById('skillRadarChart');
+    if (!ctx) return;
+
+    const skillLabels = {{ skills|map(attribute='name')|list|tojson }};
+    const skillScores = {{ skills|map(attribute='score')|list|tojson }};
+
+    new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: skillLabels.length ? skillLabels : ['Python', 'SQL', 'AI', 'Cloud'],
+            datasets: [{
+                label: 'Skill Proficiency (%)',
+                data: skillScores.length ? skillScores : [80, 70, 60, 50],
+                backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                borderColor: '#2563EB',
+                pointBackgroundColor: '#2563EB',
+                pointBorderColor: '#fff',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    angleLines: { color: 'rgba(100, 116, 139, 0.2)' },
+                    grid: { color: 'rgba(100, 116, 139, 0.15)' },
+                    suggestedMin: 0,
+                    suggestedMax: 100,
+                    ticks: { display: false }
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

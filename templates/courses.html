@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% block title %}Courses Catalog — SkillSphere AI{% endblock %}
+
+{% block content %}
+<!-- QUICK PAGE GUIDE BANNER -->
+<div class="page-guide-banner">
+    <i class="bi bi-lightbulb-fill"></i>
+    <div>
+        <strong>Course Catalog:</strong> Explore foundational and advanced courses in Python, SQL, Machine Learning, and Cloud Computing. Enroll with one click and earn verified completion certificates.
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h2 class="fw-bold mb-1">Explore Courses 📚</h2>
+        <p class="text-muted mb-0">High-impact curriculum designed to build technical competency and interview readiness.</p>
+    </div>
+    {% if session.role in ['Admin', 'Trainer'] %}
+    <button class="btn btn-brand btn-sm" data-bs-toggle="modal" data-bs-target="#createCourseModal">
+        <i class="bi bi-plus-circle me-1"></i> Create New Course
+    </button>
+    {% endif %}
+</div>
+
+<!-- FILTER / SEARCH BAR -->
+<div class="card p-3 mb-4 shadow-sm">
+    <div class="row g-2 align-items-center">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" id="courseSearch" class="form-control" placeholder="Search courses by topic, skill, or title...">
+            </div>
+        </div>
+        <div class="col-md-6 d-flex gap-2 justify-content-md-end flex-wrap">
+            <button class="btn btn-sm btn-outline-brand filter-btn active" data-filter="all">All</button>
+            <button class="btn btn-sm btn-outline-secondary filter-btn" data-filter="Video">🎥 Videos</button>
+            <button class="btn btn-sm btn-outline-secondary filter-btn" data-filter="PDF">📄 Guides</button>
+            <button class="btn btn-sm btn-outline-secondary filter-btn" data-filter="Assignment">💻 Assignments</button>
+        </div>
+    </div>
+</div>
+
+<!-- COURSE GRID -->
+<div class="row g-4" id="courseContainer">
+    {% for c in courses %}
+    <div class="col-md-6 col-lg-4 course-item" data-title="{{ c.title|lower }}" data-type="{{ c.type }}">
+        <div class="card h-100 course-card p-3 d-flex flex-column justify-content-between shadow-sm">
+            <div>
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="badge {% if c.type == 'Video' %}bg-primary-soft text-primary-brand{% elif c.type == 'PDF' %}bg-secondary-soft text-accent{% else %}bg-success-soft text-success{% endif %}">
+                        {{ c.type }}
+                    </span>
+                    <span class="text-muted small"><i class="bi bi-clock me-1"></i>{{ c.duration }}</span>
+                </div>
+                <h5 class="fw-bold mb-2">{{ c.title }}</h5>
+                <p class="text-muted small mb-3">{{ c.description }}</p>
+            </div>
+
+            <div class="pt-3 border-top mt-auto">
+                {% if c.id in enrolled_ids %}
+                <div class="mb-2">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span class="text-muted">Progress</span>
+                        <span class="fw-bold">{{ enrolled_ids[c.id] }}%</span>
+                    </div>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar {% if enrolled_ids[c.id] == 100 %}bg-success{% endif %}" role="progressbar" style="width: {{ enrolled_ids[c.id] }}%;"></div>
+                    </div>
+                </div>
+                <a href="{{ url_for('learn', course_id=c.id) }}" class="btn btn-brand btn-sm w-100">
+                    <i class="bi bi-play-fill me-1"></i> {{ 'Review Content' if enrolled_ids[c.id] == 100 else 'Resume Learning' }}
+                </a>
+                {% else %}
+                <form action="{{ url_for('course_enroll', course_id=c.id) }}" method="POST">
+                    <button type="submit" class="btn btn-outline-brand btn-sm w-100">
+                        <i class="bi bi-bookmark-plus me-1"></i> Enroll Now
+                    </button>
+                </form>
+                {% endif %}
+
+                {% if session.role in ['Admin', 'Trainer'] %}
+                <form action="{{ url_for('course_delete', course_id=c.id) }}" method="POST" class="mt-2 text-end" onsubmit="return confirm('Delete this course?');">
+                    <button type="submit" class="btn btn-link text-danger p-0 small text-decoration-none">
+                        <i class="bi bi-trash me-1"></i> Delete Course
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center py-5">
+        <p class="text-muted">No courses available at the moment.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- CREATE COURSE MODAL -->
+{% if session.role in ['Admin', 'Trainer'] %}
+<div class="modal fade" id="createCourseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Create New Course</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ url_for('course_create') }}" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Course Title</label>
+                        <input type="text" name="title" class="form-control" placeholder="e.g. Master React & Next.js" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Description</label>
+                        <textarea name="description" class="form-control" rows="3" placeholder="Overview and learning objectives..." required></textarea>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold">Format</label>
+                            <select name="type" class="form-select">
+                                <option value="Video">Video Course</option>
+                                <option value="PDF">PDF / Guide</option>
+                                <option value="Assignment">Hands-on Project</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold">Duration</label>
+                            <input type="text" name="duration" class="form-control" placeholder="e.g. 2 weeks" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-brand btn-sm">Create Course (+50 XP)</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('courseSearch');
+    const items = document.querySelectorAll('.course-item');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    let activeFilter = 'all';
+
+    function filterCourses() {
+        const query = searchInput.value.toLowerCase().trim();
+        items.forEach(item => {
+            const title = item.getAttribute('data-title');
+            const type = item.getAttribute('data-type');
+            const matchesQuery = !query || title.includes(query);
+            const matchesType = activeFilter === 'all' || type === activeFilter;
+            item.style.display = matchesQuery && matchesType ? 'block' : 'none';
+        });
+    }
+
+    searchInput && searchInput.addEventListener('input', filterCourses);
+
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterBtns.forEach(b => {
+                b.classList.remove('btn-brand', 'active');
+                b.classList.add('btn-outline-secondary');
+            });
+            btn.classList.add('btn-brand', 'active');
+            btn.classList.remove('btn-outline-secondary');
+            activeFilter = btn.getAttribute('data-filter');
+            filterCourses();
+        });
+    });
+});
+</script>
+{% endblock %}

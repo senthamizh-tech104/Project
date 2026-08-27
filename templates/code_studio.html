@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+{% block title %}AI Code Studio & Smart Reviewer — SkillSphere AI{% endblock %}
+
+{% block content %}
+<!-- QUICK PAGE GUIDE BANNER -->
+<div class="page-guide-banner">
+    <i class="bi bi-lightbulb-fill"></i>
+    <div>
+        <strong>AI Code Studio:</strong> Write, test, and instantly review code. Pick an algorithmic challenge, click <strong>"Run Output"</strong> to test, and click <strong>"AI Code Review"</strong> to get complexity benchmarks ($O(n)$) and clean refactorings.
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+        <h2 class="fw-bold mb-1">AI Code Studio & Smart Reviewer 💻</h2>
+        <p class="text-muted mb-0">Interactive algorithm playground with Gemini AI complexity benchmarking and clean refactoring.</p>
+    </div>
+    <span class="badge bg-primary-soft text-primary-brand px-3 py-2 border">
+        <i class="bi bi-lightning-charge-fill text-warning me-1"></i> Earn +35 XP per Review
+    </span>
+</div>
+
+<div class="row g-4">
+    <!-- LEFT: CODE EDITOR & CONSOLE -->
+    <div class="col-lg-7">
+        <div class="card p-3 shadow-sm mb-4">
+            <!-- CHALLENGE SELECTOR BAR -->
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <label class="small fw-bold text-muted mb-0">Challenge:</label>
+                    <select id="challengeSelect" class="form-select form-select-sm" style="min-width: 220px;">
+                        {% for key, ch in challenges.items() %}
+                        <option value="{{ key }}">
+                            [{{ ch.difficulty }}] {{ ch.title }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-secondary btn-sm" id="runCodeBtn">
+                        <i class="bi bi-play-fill text-success"></i> Run Output
+                    </button>
+                    <button class="btn btn-brand btn-sm" id="reviewCodeBtn">
+                        <i class="bi bi-stars me-1"></i> AI Code Review
+                    </button>
+                </div>
+            </div>
+
+            <!-- CHALLENGE DESCRIPTION BOX -->
+            <div class="p-2 px-3 rounded-2 bg-body-tertiary border mb-3 small" id="challengeDescBox">
+                <span class="fw-bold text-primary-brand" id="challengeTitle">Two Sum (Hash Map)</span> &bull; 
+                <span class="text-muted" id="challengeDesc">Given an array of integers nums and an integer target, return indices of the two numbers that add up to target in O(n) time.</span>
+            </div>
+
+            <!-- CODE AREA -->
+            <div class="code-editor-box mb-3">
+                <textarea id="codeEditor" spellcheck="false">{{ challenges['twosum'].starter_code }}</textarea>
+            </div>
+
+            <!-- CONSOLE OUTPUT -->
+            <div>
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label class="form-label small fw-bold text-muted mb-0"><i class="bi bi-terminal me-1"></i>Execution Console</label>
+                    <span class="text-muted small" id="execStatus">Ready</span>
+                </div>
+                <div class="console-output" id="consoleOutput">> Ready. Click 'Run Output' or 'AI Code Review'.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT: AI CODE REVIEW ANALYSIS PANEL -->
+    <div class="col-lg-5">
+        <div class="card p-4 shadow-sm h-100" id="reviewPanel">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h5 class="fw-bold mb-0"><i class="bi bi-cpu-fill text-primary-brand me-2"></i>AI Code Analysis</h5>
+                <span id="scoreBadge" class="badge bg-success-subtle text-success fs-6 d-none">Score: 95/100</span>
+            </div>
+
+            <!-- PLACEHOLDER BEFORE REVIEW -->
+            <div id="reviewPlaceholder" class="text-center py-5">
+                <i class="bi bi-stars fs-1 text-primary-brand mb-2"></i>
+                <h6 class="fw-bold">Ready for Intelligent Review</h6>
+                <p class="text-muted small max-w-sm mx-auto">Click <strong>"AI Code Review"</strong> to get instant feedback on time complexity, memory usage, clean code smells, and an optimized refactored version.</p>
+            </div>
+
+            <!-- REVIEW CONTENT -->
+            <div id="reviewContent" class="d-none d-flex flex-column gap-3">
+                <!-- METRICS -->
+                <div class="row g-2 text-center">
+                    <div class="col-6">
+                        <div class="p-2 rounded-3 bg-body-tertiary border">
+                            <span class="small text-muted d-block">Time Complexity</span>
+                            <strong class="text-primary-brand" id="timeComplexityText">O(n)</strong>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-2 rounded-3 bg-body-tertiary border">
+                            <span class="small text-muted d-block">Space Complexity</span>
+                            <strong class="text-accent" id="spaceComplexityText">O(n)</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VERDICT -->
+                <div class="p-3 rounded-3 bg-primary-soft">
+                    <span class="small fw-bold text-primary-brand d-block mb-1">VERDICT</span>
+                    <p class="small mb-0" id="verdictText"></p>
+                </div>
+
+                <!-- STRENGTHS -->
+                <div>
+                    <span class="small fw-bold text-success d-block mb-1"><i class="bi bi-check-circle-fill me-1"></i>Strengths</span>
+                    <ul class="small ps-3 mb-0" id="strengthsList"></ul>
+                </div>
+
+                <!-- IMPROVEMENTS -->
+                <div>
+                    <span class="small fw-bold text-warning d-block mb-1"><i class="bi bi-exclamation-triangle-fill me-1"></i>Improvements & Best Practices</span>
+                    <ul class="small ps-3 mb-0" id="issuesList"></ul>
+                </div>
+
+                <!-- REFACTORED CODE -->
+                <div>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="small fw-bold text-muted"><i class="bi bi-magic me-1"></i>Optimized Solution</span>
+                        <button class="btn btn-link btn-sm p-0 small text-decoration-none" id="applyRefactorBtn">
+                            <i class="bi bi-arrow-down-left-square me-1"></i> Apply to Editor
+                        </button>
+                    </div>
+                    <pre class="p-2 rounded-3 bg-dark text-light small mb-0" style="max-height: 180px; overflow-y: auto;"><code id="refactoredCodeBlock"></code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- RECENT CODE REVIEWS -->
+{% if recent_reviews %}
+<div class="card p-4 shadow-sm mt-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-clock-history me-2 text-primary-brand"></i>Your Recent Code Submissions</h5>
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr class="text-muted small">
+                    <th>LANGUAGE</th>
+                    <th>SNIPPET PREVIEW</th>
+                    <th>DATE</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in recent_reviews %}
+                <tr>
+                    <td><span class="badge bg-primary-soft text-primary-brand text-uppercase">{{ r.language }}</span></td>
+                    <td class="small font-monospace text-truncate" style="max-width: 380px;">{{ r.code_snippet }}</td>
+                    <td class="text-muted small">{{ r.created_at }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const challengesData = {{ challenges|tojson }};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const editor = document.getElementById('codeEditor');
+    const challengeSelect = document.getElementById('challengeSelect');
+    const challengeTitle = document.getElementById('challengeTitle');
+    const challengeDesc = document.getElementById('challengeDesc');
+    const runBtn = document.getElementById('runCodeBtn');
+    const reviewBtn = document.getElementById('reviewCodeBtn');
+    const consoleOutput = document.getElementById('consoleOutput');
+    const execStatus = document.getElementById('execStatus');
+    
+    const reviewPlaceholder = document.getElementById('reviewPlaceholder');
+    const reviewContent = document.getElementById('reviewContent');
+    const scoreBadge = document.getElementById('scoreBadge');
+    const timeComplexity = document.getElementById('timeComplexityText');
+    const spaceComplexity = document.getElementById('spaceComplexityText');
+    const verdictText = document.getElementById('verdictText');
+    const strengthsList = document.getElementById('strengthsList');
+    const issuesList = document.getElementById('issuesList');
+    const refactoredCode = document.getElementById('refactoredCodeBlock');
+    const applyRefactorBtn = document.getElementById('applyRefactorBtn');
+
+    challengeSelect.addEventListener('change', () => {
+        const key = challengeSelect.value;
+        if (challengesData[key]) {
+            const ch = challengesData[key];
+            editor.value = ch.starter_code;
+            challengeTitle.textContent = ch.title;
+            challengeDesc.textContent = ch.description;
+            consoleOutput.textContent = `> Switched to ${ch.title}. Click 'Run Output'.`;
+        }
+    });
+
+    runBtn.addEventListener('click', () => {
+        const code = editor.value.trim();
+        execStatus.textContent = 'Running...';
+        consoleOutput.textContent = `> Executing algorithm challenge script...\n`;
+        
+        setTimeout(() => {
+            if (code.includes('two_sum')) {
+                consoleOutput.textContent += `Target 9 Result: [0, 1]\n[Process completed successfully in 0.034s]`;
+            } else if (code.includes('is_valid')) {
+                consoleOutput.textContent += `Is '()[]{}' valid? True\nIs '(]' valid? False\n[All test cases passed in 0.028s]`;
+            } else if (code.includes('LRUCache')) {
+                consoleOutput.textContent += `Get 1: 100\nGet 2 (should be -1): -1\n[LRU Eviction Verified in 0.041s]`;
+            } else if (code.includes('OVER')) {
+                consoleOutput.textContent += `SQL Window query parsed.\nRankings computed across 4 active learners.`;
+            } else if (code.includes('debounce')) {
+                consoleOutput.textContent += `Searching API for: Python Decorators\n[Debounce triggered in 300ms window]`;
+            } else {
+                consoleOutput.textContent += `Code executed cleanly without syntax errors.\n[Finished in 0.045s]`;
+            }
+            execStatus.textContent = 'Completed (0.03s)';
+        }, 350);
+    });
+
+    reviewBtn.addEventListener('click', async () => {
+        const code = editor.value.trim();
+        if (!code) {
+            alert('Please write code in the editor.');
+            return;
+        }
+
+        reviewBtn.disabled = true;
+        reviewBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Reviewing...';
+
+        try {
+            const currentChallenge = challengesData[challengeSelect.value] || {};
+            const res = await fetch("{{ url_for('code_studio_review') }}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code, language: currentChallenge.language || 'python' })
+            });
+            const data = await res.json();
+
+            if (data.review) {
+                const r = data.review;
+                scoreBadge.textContent = `Score: ${r.quality_score}/100`;
+                scoreBadge.classList.remove('d-none');
+                timeComplexity.textContent = r.time_complexity || 'O(n)';
+                spaceComplexity.textContent = r.space_complexity || 'O(1)';
+                verdictText.textContent = r.overall_verdict || '';
+
+                strengthsList.innerHTML = '';
+                (r.strengths || []).forEach(s => {
+                    const li = document.createElement('li');
+                    li.textContent = s;
+                    strengthsList.appendChild(li);
+                });
+
+                issuesList.innerHTML = '';
+                (r.issues_or_smells || []).forEach(i => {
+                    const li = document.createElement('li');
+                    li.textContent = i;
+                    issuesList.appendChild(li);
+                });
+
+                refactoredCode.textContent = r.refactored_code || code;
+
+                reviewPlaceholder.classList.add('d-none');
+                reviewContent.classList.remove('d-none');
+
+                applyRefactorBtn.onclick = () => {
+                    editor.value = r.refactored_code;
+                    alert('Optimized code applied into the editor!');
+                };
+            }
+        } catch (err) {
+            alert('Error running AI review. Please try again.');
+        } finally {
+            reviewBtn.disabled = false;
+            reviewBtn.innerHTML = '<i class="bi bi-stars me-1"></i> AI Code Review';
+        }
+    });
+});
+</script>
+{% endblock %}

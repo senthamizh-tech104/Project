@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block title %}Career Roadmap & Project Studio — SkillSphere AI{% endblock %}
+
+{% block content %}
+<!-- QUICK PAGE GUIDE BANNER -->
+<div class="page-guide-banner">
+    <i class="bi bi-lightbulb-fill"></i>
+    <div>
+        <strong>Interactive Career Roadmap:</strong> Follow a step-by-step milestone path towards your target role. Check off milestones as you build real portfolio projects, or generate a custom AI roadmap for any specialized tech role.
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h2 class="fw-bold mb-1">Career Roadmap & Project Studio 🗺️</h2>
+        <p class="text-muted mb-0">Structured milestone progression with curated portfolio project briefs.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-brand btn-sm" data-bs-toggle="modal" data-bs-target="#newRoadmapModal">
+            <i class="bi bi-stars me-1"></i> Generate AI Roadmap (+40 XP)
+        </button>
+    </div>
+</div>
+
+<!-- ROADMAP HERO STATS -->
+<div class="card p-4 mb-4 border-0 shadow-sm" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(37, 99, 235, 0.08));">
+    <div class="row align-items-center g-3">
+        <div class="col-md-8">
+            <span class="badge bg-success text-white px-3 py-1 rounded-pill mb-2">Target Career Role</span>
+            <h3 class="fw-bold mb-1">{{ target_role }}</h3>
+            <p class="text-muted small mb-3">5 curated learning milestones designed to build job-ready competencies and portfolio codebases.</p>
+            <div class="d-flex align-items-center gap-3">
+                <div class="progress flex-grow-1" style="height: 10px;">
+                    <div class="progress-bar bg-success" id="overallProgressBar" style="width: {{ completion_percent }}%;"></div>
+                </div>
+                <span class="fw-bold text-success" id="percentText">{{ completion_percent }}% Completed</span>
+            </div>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <div class="p-3 bg-white rounded-3 border d-inline-block text-start shadow-sm" style="background-color: var(--card-bg) !important;">
+                <span class="small text-muted d-block"><i class="bi bi-award text-warning me-1"></i>Milestone Reward</span>
+                <span class="fw-bold text-success">+25 XP per Milestone</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ROADMAP TIMELINE -->
+<div class="card p-4 shadow-sm">
+    <h5 class="fw-bold mb-4"><i class="bi bi-signpost-2-fill text-primary-brand me-2"></i>Milestone Path</h5>
+
+    <div class="roadmap-timeline" id="milestonesContainer">
+        {% for m in milestones %}
+        <div class="roadmap-node {{ 'completed' if m.completed else '' }}" id="node-{{ m.id }}">
+            <div class="roadmap-node-badge">
+                {% if m.completed %}<i class="bi bi-check-lg"></i>{% else %}{{ m.step }}{% endif %}
+            </div>
+            <div class="card p-3 ms-2 border {{ 'bg-success-soft' if m.completed else 'bg-body-tertiary' }}">
+                <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
+                    <div>
+                        <div class="d-flex align-items-center gap-2">
+                            <h5 class="fw-bold mb-0">{{ m.title }}</h5>
+                            <span class="badge bg-secondary-soft text-dark small"><i class="bi bi-clock me-1"></i>{{ m.duration }}</span>
+                        </div>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input milestone-toggle" type="checkbox" role="switch" data-id="{{ m.id }}" {{ 'checked' if m.completed else '' }}>
+                        <label class="form-check-label small fw-bold ms-1">Mark Done</label>
+                    </div>
+                </div>
+
+                <!-- SKILLS REQUIRED -->
+                <div class="mb-2">
+                    <span class="small fw-bold text-muted d-block mb-1">KEY COMPETENCIES:</span>
+                    <div class="d-flex gap-1 flex-wrap">
+                        {% for s in m.skills %}
+                        <span class="badge bg-primary-soft text-primary-brand">{{ s }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- PORTFOLIO PROJECT BRIEF -->
+                <div class="p-2 rounded-2 bg-white border mt-2" style="background-color: var(--card-bg) !important;">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-laptop text-primary-brand"></i>
+                        <span class="small fw-semibold">Portfolio Project:</span>
+                        <span class="small text-body">{{ m.project }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- AI ROADMAP GENERATOR MODAL -->
+<div class="modal fade" id="newRoadmapModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Generate Custom AI Career Roadmap</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="generateRoadmapForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Target Engineering Role</label>
+                        <input type="text" id="targetRoleInput" class="form-control" placeholder="e.g. Senior Machine Learning Engineer, Cloud Architect" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Target Timeframe</label>
+                        <select id="timeframeSelect" class="form-select">
+                            <option value="30 Days">30 Days (Fast Track)</option>
+                            <option value="60 Days" selected>60 Days (Comprehensive)</option>
+                            <option value="90 Days">90 Days (Deep Mastery)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-brand btn-sm" id="genRoadmapBtn">
+                        <i class="bi bi-cpu me-1"></i> Generate with AI (+40 XP)
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const toggles = document.querySelectorAll('.milestone-toggle');
+    const progressBar = document.getElementById('overallProgressBar');
+    const percentText = document.getElementById('percentText');
+
+    function updateProgress() {
+        const total = toggles.length;
+        let checked = 0;
+        toggles.forEach(t => { if (t.checked) checked++; });
+        const pct = Math.round((checked / total) * 100);
+        progressBar.style.width = pct + '%';
+        percentText.textContent = pct + '% Completed';
+    }
+
+    toggles.forEach(toggle => {
+        toggle.addEventListener('change', async () => {
+            const milestoneId = parseInt(toggle.getAttribute('data-id'));
+            const node = document.getElementById(`node-${milestoneId}`);
+            
+            if (toggle.checked) {
+                node.classList.add('completed');
+            } else {
+                node.classList.remove('completed');
+            }
+            updateProgress();
+
+            try {
+                await fetch("{{ url_for('roadmap_toggle') }}", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ milestone_id: milestoneId })
+                });
+            } catch (err) {
+                console.error('Failed to sync milestone', err);
+            }
+        });
+    });
+
+    const genForm = document.getElementById('generateRoadmapForm');
+    const genBtn = document.getElementById('genRoadmapBtn');
+
+    genForm && genForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const targetRole = document.getElementById('targetRoleInput').value.trim();
+        const timeframe = document.getElementById('timeframeSelect').value;
+
+        genBtn.disabled = true;
+        genBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Generating...';
+
+        try {
+            const res = await fetch("{{ url_for('roadmap_generate') }}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ target_role: targetRole, timeframe: timeframe })
+            });
+            const data = await res.json();
+            if (data.success) {
+                location.reload();
+            }
+        } catch (err) {
+            alert('Failed to generate roadmap. Please try again.');
+        } finally {
+            genBtn.disabled = false;
+        }
+    });
+});
+</script>
+{% endblock %}

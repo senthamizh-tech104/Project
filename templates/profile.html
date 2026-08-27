@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}User Profile & Credentials — SkillSphere AI{% endblock %}
+
+{% block content %}
+<!-- QUICK PAGE GUIDE BANNER -->
+<div class="page-guide-banner">
+    <i class="bi bi-lightbulb-fill"></i>
+    <div>
+        <strong>Verified Credentials & Profile:</strong> View your account details, level progression, and download official PDF certificates for completed courses.
+    </div>
+</div>
+
+<div class="mb-4">
+    <h2 class="fw-bold mb-1">User Profile & Verified Credentials 👤</h2>
+    <p class="text-muted mb-0">Manage your profile details and view certificates awarded by SkillSphere AI.</p>
+</div>
+
+<div class="row g-4">
+    <!-- USER PROFILE CARD -->
+    <div class="col-lg-4">
+        <div class="card p-4 text-center shadow-sm">
+            <div class="avatar-badge mx-auto mb-3" style="width: 72px; height: 72px; font-size: 2rem;">
+                {{ user.name[0]|upper }}
+            </div>
+            <h4 class="fw-bold mb-1">{{ user.name }}</h4>
+            <span class="badge bg-primary-soft text-primary-brand align-self-center mb-2 px-3 py-1">{{ user.role }}</span>
+            <p class="text-muted small mb-3"><i class="bi bi-envelope me-1"></i>{{ user.email }}</p>
+
+            <div class="border-top pt-3 text-start small">
+                <div class="d-flex justify-content-between py-1">
+                    <span class="text-muted">Member Since:</span>
+                    <span class="fw-semibold">{{ user.created_at }}</span>
+                </div>
+                <div class="d-flex justify-content-between py-1">
+                    <span class="text-muted">Completed Courses:</span>
+                    <span class="fw-semibold text-success">{{ completed_courses }}</span>
+                </div>
+                <div class="d-flex justify-content-between py-1">
+                    <span class="text-muted">Skill DNA Score:</span>
+                    <span class="fw-semibold text-primary-brand">{{ skill_score }}%</span>
+                </div>
+                <div class="d-flex justify-content-between py-1">
+                    <span class="text-muted">Level Progression:</span>
+                    <span class="fw-semibold text-warning">Level {{ gamification.level or 1 }} ({{ gamification.xp or 100 }} XP)</span>
+                </div>
+            </div>
+
+            <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm w-100 mt-4">
+                <i class="bi bi-box-arrow-right me-1"></i> Sign Out
+            </a>
+        </div>
+    </div>
+
+    <!-- CERTIFICATES & ACHIEVEMENTS -->
+    <div class="col-lg-8">
+        <div class="card p-4 shadow-sm">
+            <h5 class="fw-bold mb-3"><i class="bi bi-award-fill me-2 text-warning"></i>Earned Certificates ({{ certificates|length }})</h5>
+            
+            {% if certificates %}
+            <div class="d-flex flex-column gap-3">
+                {% for cert in certificates %}
+                <div class="certificate-box p-4 bg-body-tertiary">
+                    <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
+                        <div>
+                            <span class="badge bg-success-subtle text-success mb-1"><i class="bi bi-patch-check-fill me-1"></i> Official Certificate of Completion</span>
+                            <h5 class="fw-bold text-primary-brand mb-0">{{ cert.course_title }}</h5>
+                        </div>
+                        <button class="btn btn-outline-brand btn-sm" onclick="window.print();">
+                            <i class="bi bi-printer me-1"></i> Print / Save PDF
+                        </button>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center text-muted small mt-3 pt-2 border-top">
+                        <span>Issued To: <strong>{{ user.name }}</strong></span>
+                        <span>Date: <strong>{{ cert.date }}</strong></span>
+                        <span>Credential ID: <code class="text-dark">{{ cert.certificate_id }}</code></span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-award fs-1 text-muted"></i>
+                <p class="text-muted mt-2 mb-3">No certificates earned yet. Complete 100% of any course to receive your official certificate!</p>
+                <a href="{{ url_for('courses') }}" class="btn btn-brand btn-sm">Explore Courses</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

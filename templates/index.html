@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}SkillSphere AI — Build Skills & Master Engineering{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="hero-section text-center">
+    <div class="hero-badge"><i class="bi bi-stars"></i> Next-Gen AI Learning & Skill Growth Platform</div>
+    <h1 class="hero-title">Build Skills. Measure Growth. <span class="text-accent">Learn Smarter.</span></h1>
+    <p class="hero-subtitle">SkillSphere AI combines adaptive courses, an in-browser AI Code Studio, technical mock interview simulators, and 24/7 AI mentoring in one unified platform.</p>
+    
+    <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
+        <a href="{{ url_for('demo_login', role='learner') }}" class="btn btn-brand btn-lg px-4 shadow-sm">
+            <i class="bi bi-lightning-charge-fill me-1"></i> Try Instant Demo (1-Click)
+        </a>
+        <a href="{{ url_for('register') }}" class="btn btn-outline-brand btn-lg px-4">Create Account</a>
+        <a href="{{ url_for('login') }}" class="btn btn-outline-secondary btn-lg px-3">Login</a>
+    </div>
+
+    <!-- QUICK ROLE BADGES -->
+    <div class="d-flex justify-content-center align-items-center gap-2 mt-3 flex-wrap">
+        <span class="text-muted small">Instant 1-Click Access:</span>
+        <a href="{{ url_for('demo_login', role='learner') }}" class="badge bg-primary-soft text-primary-brand text-decoration-none py-2 px-3">
+            🎓 Demo Learner
+        </a>
+        <a href="{{ url_for('demo_login', role='trainer') }}" class="badge bg-success-soft text-success text-decoration-none py-2 px-3">
+            👨‍🏫 Demo Trainer
+        </a>
+        <a href="{{ url_for('demo_login', role='admin') }}" class="badge bg-secondary-soft text-dark text-decoration-none py-2 px-3">
+            🛡️ Demo Admin
+        </a>
+    </div>
+</section>
+
+<!-- CORE PLATFORM HIGHLIGHTS -->
+<section class="py-5">
+    <h2 class="section-heading text-center mb-1">Everything you need to accelerate your career</h2>
+    <p class="text-center text-muted small mb-4">Structured into 4 integrated engineering modules</p>
+    
+    <div class="row g-4 mt-1">
+        <div class="col-md-6 col-lg-3">
+            <div class="feature-card h-100 shadow-sm">
+                <div class="feature-icon bg-primary-soft"><i class="bi bi-code-square"></i></div>
+                <h5>AI Code Studio</h5>
+                <p class="text-muted small">In-browser IDE with live algorithm tests, time complexity analysis, and clean refactoring.</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="feature-card h-100 shadow-sm">
+                <div class="feature-icon bg-danger-soft"><i class="bi bi-mic-fill"></i></div>
+                <h5>Mock Interview Chamber</h5>
+                <p class="text-muted small">Role-tailored interview challenges with real-time AI scoring, strengths analysis, and model answers.</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="feature-card h-100 shadow-sm">
+                <div class="feature-icon bg-success-soft"><i class="bi bi-signpost-2-fill"></i></div>
+                <h5>Career Roadmap</h5>
+                <p class="text-muted small">Step-by-step milestone learning paths with curated portfolio-grade project briefs.</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="feature-card h-100 shadow-sm">
+                <div class="feature-icon bg-secondary-soft"><i class="bi bi-robot"></i></div>
+                <h5>24/7 AI Mentor</h5>
+                <p class="text-muted small">Multi-language programming tutor ready to answer questions in Python, SQL, JS, Java, and C++.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- STATS -->
+<section class="stats-section py-5 px-3 mb-5">
+    <div class="row text-center g-4">
+        <div class="col-6 col-md-3">
+            <div class="stat-number">500+</div>
+            <div class="stat-label">Active Learners</div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-number">50+</div>
+            <div class="stat-label">Interactive Courses</div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-number">95%</div>
+            <div class="stat-label">Completion Rate</div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-number">24/7</div>
+            <div class="stat-label">AI Mentor Support</div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section text-center py-5 my-4 px-3 shadow-sm">
+    <h2 class="mb-2">Start Your Learning Journey Now</h2>
+    <p class="text-muted mb-4">Join SkillSphere AI today and take immediate control of your career growth.</p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <a href="{{ url_for('demo_login', role='learner') }}" class="btn btn-brand btn-lg px-5">
+            <i class="bi bi-lightning-charge-fill me-1"></i> Launch Instant Demo
+        </a>
+        <a href="{{ url_for('register') }}" class="btn btn-outline-brand btn-lg px-4">
+            Create Free Account
+        </a>
+    </div>
+</section>
+
+{% endblock %}

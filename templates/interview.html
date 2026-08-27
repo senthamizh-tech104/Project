@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+{% block title %}AI Mock Interview Simulator — SkillSphere AI{% endblock %}
+
+{% block content %}
+<!-- QUICK PAGE GUIDE BANNER -->
+<div class="page-guide-banner">
+    <i class="bi bi-lightbulb-fill"></i>
+    <div>
+        <strong>AI Mock Interview Simulator:</strong> Choose your target engineering role and seniority level, generate an interview question, type your response, and click <strong>"Submit for Evaluation"</strong> to get instant AI scoring, strength analysis, and ideal model answers.
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+        <h2 class="fw-bold mb-1">AI Mock Interview Simulator 🎯</h2>
+        <p class="text-muted mb-0">Role-tailored behavioral and technical interview questions evaluated by Gemini AI.</p>
+    </div>
+    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2">
+        <i class="bi bi-fire me-1"></i> Earn +75 XP per Interview
+    </span>
+</div>
+
+<div class="row g-4">
+    <!-- LEFT: INTERVIEW CHAMBER -->
+    <div class="col-lg-7">
+        <div class="card p-4 shadow-sm mb-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-mic-fill text-danger me-2"></i>Interview Setup & Response</h5>
+
+            <!-- ROLE & DIFFICULTY SELECTORS -->
+            <div class="row g-2 mb-3">
+                <div class="col-md-7">
+                    <label class="form-label small fw-semibold">Target Engineering Role</label>
+                    <select id="roleSelector" class="form-select">
+                        {% for key, r in roles.items() %}
+                        <option value="{{ key }}">{{ r.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label small fw-semibold">Seniority Level</label>
+                    <select id="difficultySelector" class="form-select">
+                        <option value="junior">Junior (0-2 yrs)</option>
+                        <option value="mid" selected>Mid-Level (2-5 yrs)</option>
+                        <option value="senior">Senior Lead (5+ yrs)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-outline-brand btn-sm" id="generateQuestionBtn">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Generate Question
+                </button>
+            </div>
+
+            <!-- QUESTION BOX -->
+            <div class="question-card p-3 rounded-3 mb-3" id="questionBox">
+                <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-1">
+                    <div>
+                        <span class="badge bg-primary-soft text-primary-brand me-1" id="roleBadge">Python Backend Engineer</span>
+                        <span class="badge bg-secondary-soft text-dark" id="difficultyBadge">Mid-Level</span>
+                    </div>
+                    <span class="text-muted small"><i class="bi bi-stopwatch me-1"></i>Avg. response: 3-5 min</span>
+                </div>
+                <h6 class="fw-bold mb-0 text-body" id="questionText">
+                    How does Python handle memory management with reference counting vs cyclic garbage collection? How would you profile memory bottlenecks in FastAPI or Django?
+                </h6>
+            </div>
+
+            <!-- ANSWER INPUT -->
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label class="form-label small fw-semibold mb-0">Your Verbal / Written Response</label>
+                    <span class="small text-muted" id="wordCount">0 words</span>
+                </div>
+                <textarea id="answerInput" class="form-control" rows="7" placeholder="Articulate your thought process clearly. Mention core mechanisms, edge cases, trade-offs, and practical engineering examples..."></textarea>
+            </div>
+
+            <button class="btn btn-danger w-100 py-2 fw-bold" id="submitAnswerBtn">
+                <i class="bi bi-send-check me-1"></i> Submit Answer for AI Evaluation (+75 XP)
+            </button>
+        </div>
+    </div>
+
+    <!-- RIGHT: AI EVALUATION REPORT -->
+    <div class="col-lg-5">
+        <div class="card p-4 shadow-sm h-100">
+            <h5 class="fw-bold mb-3"><i class="bi bi-clipboard2-data-fill text-primary-brand me-2"></i>AI Interview Feedback</h5>
+
+            <!-- PLACEHOLDER -->
+            <div id="evalPlaceholder" class="text-center py-5">
+                <i class="bi bi-mortarboard fs-1 text-muted mb-2"></i>
+                <h6 class="fw-bold">No Response Evaluated Yet</h6>
+                <p class="text-muted small max-w-sm mx-auto">Select a role, generate a challenge question, type your response, and click submit to receive a score, feedback on strengths, and a model answer.</p>
+            </div>
+
+            <!-- EVALUATION CONTENT -->
+            <div id="evalContent" class="d-none d-flex flex-column gap-3">
+                <!-- SCORE CIRCLE -->
+                <div class="d-flex align-items-center justify-content-center gap-3 p-3 bg-body-tertiary rounded-3">
+                    <div class="score-circle text-primary-brand">
+                        <span class="fs-4" id="evalScore">85</span>
+                        <span class="small text-muted" style="font-size: 0.65rem;">/ 100 PTS</span>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1" id="evalGrade">Strong Response</h6>
+                        <span class="badge bg-success-subtle text-success">+75 XP Earned</span>
+                    </div>
+                </div>
+
+                <!-- STRENGTHS -->
+                <div class="p-3 rounded-3 bg-success-soft">
+                    <span class="small fw-bold text-success d-block mb-1"><i class="bi bi-check-circle-fill me-1"></i>Key Strengths</span>
+                    <p class="small mb-0 text-body" id="evalStrengths"></p>
+                </div>
+
+                <!-- IMPROVEMENTS -->
+                <div class="p-3 rounded-3 bg-warning-soft">
+                    <span class="small fw-bold text-warning d-block mb-1"><i class="bi bi-lightbulb-fill me-1"></i>Areas for Improvement</span>
+                    <p class="small mb-0 text-body" id="evalImprovements"></p>
+                </div>
+
+                <!-- MODEL ANSWER -->
+                <div>
+                    <span class="small fw-bold text-primary-brand d-block mb-1"><i class="bi bi-star-fill me-1"></i>Model Benchmark Answer</span>
+                    <div class="p-3 rounded-3 bg-body-tertiary small text-body" id="evalModelAnswer" style="max-height: 180px; overflow-y: auto;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PAST INTERVIEW ATTEMPTS -->
+{% if history %}
+<div class="card p-4 mt-4 shadow-sm">
+    <h5 class="fw-bold mb-3"><i class="bi bi-clock-history me-2 text-primary-brand"></i>Your Mock Interview History</h5>
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr class="text-muted small">
+                    <th>ROLE</th>
+                    <th>QUESTION PREVIEW</th>
+                    <th>SCORE</th>
+                    <th>DATE</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for h in history %}
+                <tr>
+                    <td><span class="badge bg-primary-soft text-primary-brand">{{ h.role }}</span></td>
+                    <td class="small fw-semibold text-truncate" style="max-width: 340px;">{{ h.question }}</td>
+                    <td>
+                        <span class="badge {% if h.score >= 80 %}bg-success-subtle text-success{% elif h.score >= 60 %}bg-warning-subtle text-warning{% else %}bg-danger-subtle text-danger{% endif %}">
+                            {{ h.score }}/100
+                        </span>
+                    </td>
+                    <td class="text-muted small">{{ h.created_at }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const roleSelector = document.getElementById('roleSelector');
+    const difficultySelector = document.getElementById('difficultySelector');
+    const roleBadge = document.getElementById('roleBadge');
+    const difficultyBadge = document.getElementById('difficultyBadge');
+    const questionText = document.getElementById('questionText');
+    const answerInput = document.getElementById('answerInput');
+    const wordCount = document.getElementById('wordCount');
+    const generateBtn = document.getElementById('generateQuestionBtn');
+    const submitBtn = document.getElementById('submitAnswerBtn');
+
+    const evalPlaceholder = document.getElementById('evalPlaceholder');
+    const evalContent = document.getElementById('evalContent');
+    const evalScore = document.getElementById('evalScore');
+    const evalGrade = document.getElementById('evalGrade');
+    const evalStrengths = document.getElementById('evalStrengths');
+    const evalImprovements = document.getElementById('evalImprovements');
+    const evalModelAnswer = document.getElementById('evalModelAnswer');
+
+    answerInput.addEventListener('input', () => {
+        const words = answerInput.value.trim().split(/\s+/).filter(Boolean).length;
+        wordCount.textContent = `${words} words`;
+    });
+
+    generateBtn.addEventListener('click', async () => {
+        generateBtn.disabled = true;
+        generateBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Generating...';
+
+        try {
+            const res = await fetch("{{ url_for('interview_generate') }}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    role: roleSelector.value,
+                    difficulty: difficultySelector.value
+                })
+            });
+            const data = await res.json();
+            questionText.textContent = data.question;
+            roleBadge.textContent = data.role;
+            difficultyBadge.textContent = data.difficulty;
+            answerInput.value = '';
+            wordCount.textContent = '0 words';
+        } catch (err) {
+            alert('Failed to generate question. Please try again.');
+        } finally {
+            generateBtn.disabled = false;
+            generateBtn.innerHTML = '<i class="bi bi-arrow-clockwise me-1"></i> Generate Question';
+        }
+    });
+
+    submitBtn.addEventListener('click', async () => {
+        const answer = answerInput.value.trim();
+        if (!answer) {
+            alert('Please write your answer before submitting.');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> AI Evaluating...';
+
+        try {
+            const res = await fetch("{{ url_for('interview_evaluate') }}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    role: roleBadge.textContent,
+                    question: questionText.textContent,
+                    answer: answer
+                })
+            });
+            const data = await res.json();
+
+            if (data.evaluation) {
+                const ev = data.evaluation;
+                evalScore.textContent = ev.score;
+                evalGrade.textContent = ev.score >= 80 ? '🌟 Excellent Response' : (ev.score >= 65 ? '👍 Solid Understanding' : '💡 Review Needed');
+                evalStrengths.textContent = ev.strengths || 'Clear structure and articulation.';
+                evalImprovements.textContent = ev.improvements || 'Add more concrete trade-offs and edge cases.';
+                evalModelAnswer.textContent = ev.ideal_answer || '';
+
+                evalPlaceholder.classList.add('d-none');
+                evalContent.classList.remove('d-none');
+            }
+        } catch (err) {
+            alert('Error evaluating answer. Please try again.');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="bi bi-send-check me-1"></i> Submit Answer for AI Evaluation (+75 XP)';
+        }
+    });
+});
+</script>
+{% endblock %}

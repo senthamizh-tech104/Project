@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+{% block title %}24/7 AI Coding Mentor — SkillSphere AI{% endblock %}
+
+{% block content %}
+<!-- QUICK PAGE GUIDE BANNER -->
+<div class="page-guide-banner">
+    <i class="bi bi-lightbulb-fill"></i>
+    <div>
+        <strong>24/7 AI Coding Mentor:</strong> Ask programming questions across any language, paste error traces for instant fixes, or explore categorized multi-language prompt chips below.
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+        <h2 class="fw-bold mb-1">AI Coding Mentor & Tutor 🤖</h2>
+        <p class="text-muted mb-0">Get instant code explanations, algorithmic guidance, and plain-English debugging help.</p>
+    </div>
+    {% if gemini_configured %}
+    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2">
+        <i class="bi bi-patch-check-fill me-1"></i> Gemini Live AI Connected
+    </span>
+    {% else %}
+    <span class="badge bg-primary-soft text-primary-brand border px-3 py-2">
+        <i class="bi bi-info-circle me-1"></i> Smart Tutor Assistant Active
+    </span>
+    {% endif %}
+</div>
+
+<!-- CHAT WINDOW -->
+<div class="card p-0 shadow-sm overflow-hidden mb-3">
+    <!-- MESSAGES STREAM -->
+    <div class="chat-window p-3 d-flex flex-column gap-3" id="chatWindow">
+        <!-- BOT INTRO MESSAGE -->
+        <div class="chat-bubble bot shadow-sm">
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <i class="bi bi-robot text-primary-brand"></i>
+                <strong class="small text-primary-brand">SkillSphere AI Mentor</strong>
+            </div>
+            <span>Hello {{ session.name }}! I am your 24/7 technical tutor. Ask me about <strong>Python</strong>, <strong>JavaScript</strong>, <strong>SQL</strong>, <strong>Java/C++</strong>, <strong>Rust/Go</strong>, or paste code snippets to debug!</span>
+        </div>
+    </div>
+
+    <!-- CATEGORIZED MULTI-LANGUAGE PROMPTS -->
+    <div class="p-3 border-top bg-light" style="background-color: var(--card-bg-subtle) !important;">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="small fw-bold text-muted"><i class="bi bi-lightning-charge-fill text-warning me-1"></i>Click to ask common programming questions:</span>
+        </div>
+        
+        <!-- LANGUAGE CHIP TABS -->
+        <ul class="nav nav-pills mb-2 gap-1" id="promptLangTabs">
+            <li class="nav-item">
+                <button class="btn btn-xs btn-outline-primary active py-1 px-2 small rounded-pill" onclick="switchPromptCategory('python')">🐍 Python</button>
+            </li>
+            <li class="nav-item">
+                <button class="btn btn-xs btn-outline-secondary py-1 px-2 small rounded-pill" onclick="switchPromptCategory('js')">🌐 JavaScript / TS</button>
+            </li>
+            <li class="nav-item">
+                <button class="btn btn-xs btn-outline-secondary py-1 px-2 small rounded-pill" onclick="switchPromptCategory('sql')">🗄️ SQL & DB</button>
+            </li>
+            <li class="nav-item">
+                <button class="btn btn-xs btn-outline-secondary py-1 px-2 small rounded-pill" onclick="switchPromptCategory('javacpp')">☕ Java & C++</button>
+            </li>
+            <li class="nav-item">
+                <button class="btn btn-xs btn-outline-secondary py-1 px-2 small rounded-pill" onclick="switchPromptCategory('gorust')">🦀 Go & Rust</button>
+            </li>
+        </ul>
+
+        <!-- PROMPT BUTTONS BY LANGUAGE -->
+        <div id="prompts-python" class="d-flex gap-2 flex-wrap prompt-group">
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="sendPrompt('Explain Python decorators with code examples')">
+                ✨ Decorators explained
+            </button>
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="sendPrompt('How do Python generators work with yield?')">
+                ⚡ Generators & Yield
+            </button>
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="sendPrompt('What is the GIL in Python and how does it affect concurrency?')">
+                🔒 What is the GIL?
+            </button>
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="sendPrompt('How does asyncio work in Python?')">
+                ⏳ Asyncio & Event Loop
+            </button>
+        </div>
+
+        <div id="prompts-js" class="d-flex gap-2 flex-wrap prompt-group d-none">
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="sendPrompt('Explain the JavaScript Event Loop with Call Stack and Microtasks')">
+                🔄 Event Loop & Microtasks
+            </button>
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="sendPrompt('How do closures work in JavaScript with examples?')">
+                📦 JavaScript Closures
+            </button>
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="sendPrompt('What are TypeScript Generics and how to use them?')">
+                🔷 TypeScript Generics
+            </button>
+        </div>
+
+        <div id="prompts-sql" class="d-flex gap-2 flex-wrap prompt-group d-none">
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="sendPrompt('Explain database Indexing with B-Trees and optimization')">
+                ⚡ B-Tree Database Indexing
+            </button>
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="sendPrompt('Explain SQL Window Functions with RANK() and DENSE_RANK()')">
+                📊 SQL Window Functions
+            </button>
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="sendPrompt('What are ACID properties in database transactions?')">
+                🛡️ ACID Transactions
+            </button>
+        </div>
+
+        <div id="prompts-javacpp" class="d-flex gap-2 flex-wrap prompt-group d-none">
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="sendPrompt('Explain Polymorphism in OOP with Java/C++ examples')">
+                🧬 Polymorphism in OOP
+            </button>
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="sendPrompt('Explain Stack vs Heap Memory and Smart Pointers in C++')">
+                🧠 Stack vs Heap & Smart Pointers
+            </button>
+        </div>
+
+        <div id="prompts-gorust" class="d-flex gap-2 flex-wrap prompt-group d-none">
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="sendPrompt('How does Rust Ownership and Borrowing work?')">
+                🦀 Rust Ownership & Borrowing
+            </button>
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="sendPrompt('Explain Goroutines and Channels in Go')">
+                🐹 Goroutines & Channels
+            </button>
+        </div>
+    </div>
+
+    <!-- INPUT FORM -->
+    <div class="p-3 border-top bg-white" style="background-color: var(--card-bg) !important;">
+        <form id="mentorChatForm" class="d-flex gap-2">
+            <input type="text" id="mentorInput" class="form-control" placeholder="Ask any coding question (e.g. 'How do decorators work in Python?')..." required autocomplete="off">
+            <button type="submit" class="btn btn-brand px-4 d-flex align-items-center gap-1" id="sendBtn">
+                <i class="bi bi-send-fill"></i>
+                <span class="d-none d-sm-inline">Send</span>
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+function switchPromptCategory(cat) {
+    document.querySelectorAll('.prompt-group').forEach(el => el.classList.add('d-none'));
+    const target = document.getElementById(`prompts-${cat}`);
+    if (target) target.classList.remove('d-none');
+
+    document.querySelectorAll('#promptLangTabs button').forEach(btn => {
+        btn.classList.remove('btn-outline-primary', 'active');
+        btn.classList.add('btn-outline-secondary');
+    });
+    event.target.classList.add('btn-outline-primary', 'active');
+    event.target.classList.remove('btn-outline-secondary');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const chatWindow = document.getElementById('chatWindow');
+    const form = document.getElementById('mentorChatForm');
+    const input = document.getElementById('mentorInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    function appendMessage(text, sender) {
+        const bubble = document.createElement('div');
+        bubble.className = `chat-bubble ${sender} shadow-sm`;
+        
+        if (sender === 'bot') {
+            bubble.innerHTML = `
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <i class="bi bi-robot text-primary-brand"></i>
+                    <strong class="small text-primary-brand">SkillSphere AI</strong>
+                </div>
+                <div>${text.replace(/\n/g, '<br>')}</div>
+            `;
+        } else {
+            bubble.innerHTML = `
+                <div class="d-flex align-items-center gap-2 mb-1 justify-content-end">
+                    <strong class="small text-white-50">You</strong>
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <div>${text.replace(/\n/g, '<br>')}</div>
+            `;
+        }
+        
+        chatWindow.appendChild(bubble);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    async function handleSend(question) {
+        if (!question) return;
+        appendMessage(question, 'user');
+        input.value = '';
+        sendBtn.disabled = true;
+
+        const typingIndicator = document.createElement('div');
+        typingIndicator.className = 'chat-bubble bot shadow-sm text-muted small';
+        typingIndicator.id = 'typingIndicator';
+        typingIndicator.innerHTML = '<span class="spinner-grow spinner-grow-sm text-primary me-2"></span> AI Mentor is analyzing...';
+        chatWindow.appendChild(typingIndicator);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+
+        try {
+            const res = await fetch("{{ url_for('mentor_ask') }}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question })
+            });
+            const data = await res.json();
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) indicator.remove();
+            appendMessage(data.reply || 'I could not generate an answer right now. Please try rephrasing.', 'bot');
+        } catch (err) {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) indicator.remove();
+            appendMessage('Connection error. Please try again.', 'bot');
+        } finally {
+            sendBtn.disabled = false;
+            input.focus();
+        }
+    }
+
+    window.sendPrompt = function(promptText) {
+        input.value = promptText;
+        handleSend(promptText);
+    };
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const question = input.value.trim();
+        handleSend(question);
+    });
+});
+</script>
+{% endblock %}

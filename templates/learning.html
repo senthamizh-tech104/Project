@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}{{ course.title }} — Learning Room{% endblock %}
+
+{% block content %}
+<!-- QUICK PAGE GUIDE BANNER -->
+<div class="page-guide-banner">
+    <i class="bi bi-lightbulb-fill"></i>
+    <div>
+        <strong>Learning Classroom:</strong> Study the syllabus modules, complete coding exercises, and mark the course as 100% complete to claim your official verified certificate and earn <strong>+150 XP</strong>.
+    </div>
+</div>
+
+<div class="mb-3">
+    <a href="{{ url_for('courses') }}" class="text-muted small text-decoration-none">
+        <i class="bi bi-chevron-left"></i> Back to Courses
+    </a>
+</div>
+
+<div class="row g-4">
+    <!-- LEFT: MAIN LESSON VIEWER -->
+    <div class="col-lg-8">
+        <div class="card p-4 mb-4 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="badge bg-primary-soft text-primary-brand">{{ course.type }} Course</span>
+                <span class="text-muted small"><i class="bi bi-clock me-1"></i>{{ course.duration }}</span>
+            </div>
+            <h3 class="fw-bold mb-3">{{ course.title }}</h3>
+            <p class="text-muted">{{ course.description }}</p>
+
+            <!-- SIMULATED LESSON PLAYER -->
+            <div class="rounded-4 p-5 text-center text-white my-3 d-flex flex-column align-items-center justify-content-center" style="min-height: 280px; background: linear-gradient(135deg, #0F172A, #1E293B);">
+                <i class="bi bi-play-circle-fill text-primary-brand display-3 mb-3"></i>
+                <h5 class="fw-bold">Module 1: Foundations & Architecture</h5>
+                <p class="text-secondary small max-w-md">Interactive lesson material is active. Review the curriculum lessons on the right and mark complete to finish.</p>
+                <div class="d-flex gap-2 mt-2">
+                    <span class="badge bg-secondary"><i class="bi bi-file-earmark-text me-1"></i> Code Sandbox</span>
+                    <span class="badge bg-secondary"><i class="bi bi-code-square me-1"></i> Hands-on Labs</span>
+                </div>
+            </div>
+
+            <!-- ACTION BAR -->
+            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top flex-wrap gap-2">
+                <div>
+                    <span class="small text-muted">Current Course Progress: <strong>{{ enrollment.progress }}%</strong></span>
+                </div>
+                <div>
+                    {% if enrollment.progress < 100 %}
+                    <form action="{{ url_for('learn_complete', course_id=course.id) }}" method="POST">
+                        <button type="submit" class="btn btn-brand">
+                            <i class="bi bi-patch-check-fill me-1"></i> Complete & Claim Certificate (+150 XP)
+                        </button>
+                    </form>
+                    {% else %}
+                    <a href="{{ url_for('profile') }}" class="btn btn-success">
+                        <i class="bi bi-award-fill me-1"></i> View Issued Certificate
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT: CURRICULUM & MENTOR -->
+    <div class="col-lg-4">
+        <div class="card p-3 mb-4 shadow-sm">
+            <h6 class="fw-bold mb-3"><i class="bi bi-list-check me-2 text-primary-brand"></i>Curriculum Syllabus</h6>
+            <div class="list-group list-group-flush small">
+                <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                    <span><i class="bi bi-check-circle-fill text-success me-2"></i>1. Core Syntax & Architecture</span>
+                    <span class="badge bg-success-subtle text-success">Done</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                    <span><i class="bi bi-check-circle-fill text-success me-2"></i>2. Hands-on Implementation</span>
+                    <span class="badge bg-success-subtle text-success">Done</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center px-0 text-muted">
+                    <span><i class="bi bi-circle me-2 text-primary-brand"></i>3. Advanced Deep Dive & Best Practices</span>
+                    <span>45 min</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center px-0 text-muted">
+                    <span><i class="bi bi-lock me-2"></i>4. Real-world Capstone</span>
+                    <span>1 hr</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-3 bg-body-tertiary">
+            <h6 class="fw-bold mb-2"><i class="bi bi-robot me-2 text-accent"></i>Have a question?</h6>
+            <p class="small text-muted mb-3">Ask our AI Mentor for instant clarification or code examples.</p>
+            <a href="{{ url_for('mentor') }}" class="btn btn-outline-brand btn-sm w-100">
+                <i class="bi bi-chat-dots-fill me-1"></i> Open AI Mentor
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

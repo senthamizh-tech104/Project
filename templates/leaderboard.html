@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block title %}Leaderboard & XP Rewards — SkillSphere AI{% endblock %}
+
+{% block content %}
+<!-- QUICK PAGE GUIDE BANNER -->
+<div class="page-guide-banner">
+    <i class="bi bi-lightbulb-fill"></i>
+    <div>
+        <strong>Leaderboard & Badges:</strong> Track your XP ranking against other platform learners, maintain your daily learning streak (🔥), and unlock prestigious engineering badges.
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h2 class="fw-bold mb-1">Global Learner Leaderboard & XP 🏆</h2>
+        <p class="text-muted mb-0">Compete with peers, build daily learning streaks, and unlock prestigious skill badges.</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-warning text-dark px-3 py-2 border shadow-sm">
+            <i class="bi bi-lightning-charge-fill text-danger me-1"></i> Your XP: {{ user_xp or 100 }} (Level {{ user_level or 1 }})
+        </span>
+    </div>
+</div>
+
+<!-- PODIUM (TOP 3) -->
+{% if leaderboard|length >= 3 %}
+<div class="row g-3 mb-4 justify-content-center align-items-end">
+    <!-- 2ND PLACE -->
+    <div class="col-md-4 order-2 order-md-1">
+        <div class="card podium-card podium-2 shadow-sm">
+            <div class="badge bg-secondary text-white position-absolute top-0 end-0 m-2 px-2 py-1 rounded-pill">🥈 #2</div>
+            <div class="avatar-badge mx-auto mb-2" style="width: 52px; height: 52px; font-size: 1.3rem;">
+                {{ leaderboard[1].name[0]|upper }}
+            </div>
+            <h5 class="fw-bold mb-1">{{ leaderboard[1].name }}</h5>
+            <span class="badge bg-secondary-soft text-dark mb-2">{{ leaderboard[1].role }}</span>
+            <div class="fw-bold text-primary-brand fs-5">{{ leaderboard[1].xp }} XP</div>
+            <span class="small text-muted"><i class="bi bi-fire text-danger me-1"></i>{{ leaderboard[1].streak }}d streak</span>
+        </div>
+    </div>
+
+    <!-- 1ST PLACE -->
+    <div class="col-md-4 order-1 order-md-2">
+        <div class="card podium-card podium-1 shadow-sm">
+            <div class="badge bg-warning text-dark position-absolute top-0 end-0 m-2 px-3 py-1 rounded-pill fw-bold">👑 #1 CHAMPION</div>
+            <div class="avatar-badge mx-auto mb-2" style="width: 64px; height: 64px; font-size: 1.7rem; background: linear-gradient(135deg, #F59E0B, #EAB308);">
+                {{ leaderboard[0].name[0]|upper }}
+            </div>
+            <h4 class="fw-bold mb-1 text-primary-brand">{{ leaderboard[0].name }}</h4>
+            <span class="badge bg-warning-soft text-dark mb-2">{{ leaderboard[0].role }}</span>
+            <div class="fw-bold text-dark fs-4">{{ leaderboard[0].xp }} XP</div>
+            <span class="small text-muted"><i class="bi bi-fire text-danger me-1"></i>{{ leaderboard[0].streak }}d streak • Level {{ leaderboard[0].level }}</span>
+        </div>
+    </div>
+
+    <!-- 3RD PLACE -->
+    <div class="col-md-4 order-3 order-md-3">
+        <div class="card podium-card podium-3 shadow-sm">
+            <div class="badge bg-warning text-white position-absolute top-0 end-0 m-2 px-2 py-1 rounded-pill" style="background-color: #D97706 !important;">🥉 #3</div>
+            <div class="avatar-badge mx-auto mb-2" style="width: 52px; height: 52px; font-size: 1.3rem;">
+                {{ leaderboard[2].name[0]|upper }}
+            </div>
+            <h5 class="fw-bold mb-1">{{ leaderboard[2].name }}</h5>
+            <span class="badge bg-secondary-soft text-dark mb-2">{{ leaderboard[2].role }}</span>
+            <div class="fw-bold text-primary-brand fs-5">{{ leaderboard[2].xp }} XP</div>
+            <span class="small text-muted"><i class="bi bi-fire text-danger me-1"></i>{{ leaderboard[2].streak }}d streak</span>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- FULL RANKING TABLE -->
+<div class="card p-4 shadow-sm mb-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-list-ol me-2 text-primary-brand"></i>All Learner Standings</h5>
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr class="text-muted small">
+                    <th>RANK</th>
+                    <th>LEARNER</th>
+                    <th>ROLE</th>
+                    <th>LEVEL</th>
+                    <th>STREAK</th>
+                    <th>XP POINTS</th>
+                    <th>BADGES</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in leaderboard %}
+                <tr class="{% if u.id == session.user_id %}table-primary fw-semibold{% endif %}">
+                    <td class="fw-bold">
+                        {% if loop.index == 1 %}🥇
+                        {% elif loop.index == 2 %}🥈
+                        {% elif loop.index == 3 %}🥉
+                        {% else %}#{{ loop.index }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="avatar-badge small" style="width: 28px; height: 28px; font-size: 0.8rem;">{{ u.name[0]|upper }}</span>
+                            <span>{{ u.name }} {% if u.id == session.user_id %}<span class="badge bg-primary text-white ms-1">You</span>{% endif %}</span>
+                        </div>
+                    </td>
+                    <td><span class="badge bg-secondary-soft text-dark">{{ u.role }}</span></td>
+                    <td><span class="badge bg-primary-soft text-primary-brand">Lvl {{ u.level }}</span></td>
+                    <td><span class="small"><i class="bi bi-fire text-danger me-1"></i>{{ u.streak }}d</span></td>
+                    <td class="fw-bold text-primary-brand">{{ u.xp }} XP</td>
+                    <td>
+                        <div class="d-flex gap-1 flex-wrap">
+                            {% for b in u.badges_list[:3] %}
+                            <span class="badge bg-body-tertiary border text-muted small" title="{{ b }}">{{ b }}</span>
+                            {% endfor %}
+                            {% if u.badges_list|length > 3 %}
+                            <span class="badge bg-body-tertiary border text-muted small">+{{ u.badges_list|length - 3 }}</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ACHIEVEMENT BADGES SHOWCASE -->
+<div class="card p-4 shadow-sm">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0"><i class="bi bi-award-fill text-warning me-2"></i>Platform Achievement Badges</h5>
+        <span class="text-muted small">Unlock badges by learning and completing activities</span>
+    </div>
+    <div class="row g-3">
+        {% for b in all_badges %}
+        <div class="col-md-6 col-lg-3">
+            <div class="p-3 rounded-3 border h-100 d-flex align-items-center gap-3 {% if b.name in user_badges %}bg-primary-soft border-primary{% else %}bg-body-tertiary opacity-75{% endif %}">
+                <i class="bi {{ b.icon }} {{ b.color }} fs-2"></i>
+                <div>
+                    <h6 class="fw-bold mb-0 {% if b.name in user_badges %}text-primary-brand{% endif %}">{{ b.name }}</h6>
+                    <p class="text-muted small mb-0">{{ b.desc }}</p>
+                    {% if b.name in user_badges %}
+                    <span class="badge bg-success-subtle text-success small mt-1"><i class="bi bi-check-circle me-1"></i>Unlocked</span>
+                    {% else %}
+                    <span class="badge bg-secondary-subtle text-muted small mt-1"><i class="bi bi-lock me-1"></i>Locked</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
