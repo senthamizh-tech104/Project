@@ -1,0 +1,443 @@
+/* =========================================================
+   SkillSphere AI - Clean & Modern Design Tokens
+   Crafted by Team Code Ninja
+   ========================================================= */
+:root {
+    --brand-primary: #2563EB;
+    --brand-primary-hover: #1D4ED8;
+    --brand-secondary: #0EA5E9;
+    --brand-success: #10B981;
+    --brand-warning: #F59E0B;
+    --brand-danger: #EF4444;
+    --brand-bg: #F8FAFC;
+    --brand-text: #0F172A;
+    --brand-text-muted: #64748B;
+    --card-bg: #FFFFFF;
+    --card-bg-subtle: #F1F5F9;
+    --border-color: #E2E8F0;
+    --sidebar-width: 260px;
+    --topbar-height: 64px;
+}
+
+[data-bs-theme="dark"] {
+    --brand-bg: #0B1220;
+    --brand-text: #F1F5F9;
+    --brand-text-muted: #94A3B8;
+    --card-bg: #121A2B;
+    --card-bg-subtle: #182238;
+    --border-color: #1E293B;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    background-color: var(--brand-bg);
+    color: var(--brand-text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    transition: background-color 0.25s ease, color 0.25s ease;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+a { text-decoration: none; }
+
+.text-accent { color: var(--brand-secondary); }
+.text-primary-brand { color: var(--brand-primary); }
+
+/* =========================================================
+   Page Guide Banner (Compact & Friendly Instructions)
+   ========================================================= */
+.page-guide-banner {
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.06), rgba(14, 165, 233, 0.06));
+    border: 1px solid rgba(37, 99, 235, 0.15);
+    border-radius: 12px;
+    padding: 0.75rem 1.1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    color: var(--brand-text);
+}
+.page-guide-banner i {
+    font-size: 1.15rem;
+    color: var(--brand-primary);
+}
+
+/* =========================================================
+   Buttons
+   ========================================================= */
+.btn-brand {
+    background-color: var(--brand-primary);
+    border-color: var(--brand-primary);
+    color: #fff;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 0.5rem 1.2rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.btn-brand:hover {
+    background-color: var(--brand-primary-hover);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+}
+.btn-outline-brand {
+    border: 1.5px solid var(--brand-primary);
+    color: var(--brand-primary);
+    font-weight: 600;
+    border-radius: 10px;
+    background: transparent;
+    padding: 0.5rem 1.2rem;
+    transition: all 0.15s ease;
+}
+.btn-outline-brand:hover {
+    background-color: var(--brand-primary);
+    color: #fff;
+}
+.btn-icon {
+    border: none;
+    background: transparent;
+    color: var(--brand-text);
+    font-size: 1.1rem;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.15s ease;
+}
+.btn-icon:hover { background-color: rgba(37, 99, 235, 0.1); }
+
+/* =========================================================
+   Top bar
+   ========================================================= */
+.topbar {
+    height: var(--topbar-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+}
+.topbar.with-sidebar { margin-left: 0; }
+@media (min-width: 992px) {
+    .topbar.with-sidebar { margin-left: var(--sidebar-width); }
+}
+.navbar-brand-plain {
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: var(--brand-text);
+}
+.avatar-badge {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+/* =========================================================
+   Sidebar (Clean & Categorized)
+   ========================================================= */
+.sidebar {
+    width: var(--sidebar-width);
+    background-color: var(--card-bg);
+    border-right: 1px solid var(--border-color);
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 1040;
+    padding: 1.25rem 1rem;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    overflow-y: auto;
+}
+.sidebar.show { transform: translateX(0); }
+@media (min-width: 992px) {
+    .sidebar { transform: translateX(0); }
+}
+.sidebar-brand {
+    font-weight: 800;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.5rem 1rem;
+    color: var(--brand-text);
+}
+.nav-category-header {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--brand-text-muted);
+    padding: 0.75rem 0.75rem 0.25rem;
+}
+.sidebar-nav { display: flex; flex-direction: column; gap: 0.2rem; }
+.sidebar-nav a {
+    color: var(--brand-text);
+    padding: 0.55rem 0.75rem;
+    border-radius: 8px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    font-size: 0.9rem;
+}
+.sidebar-nav a i { width: 20px; text-align: center; font-size: 1rem; }
+.sidebar-nav a:hover { background-color: rgba(37, 99, 235, 0.06); }
+.sidebar-nav a.active {
+    background-color: var(--brand-primary);
+    color: #fff;
+    font-weight: 600;
+}
+.sidebar-nav a.active i { color: #fff !important; }
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    z-index: 1035;
+}
+.sidebar-overlay.show { display: block; }
+
+main.with-sidebar { margin-left: 0; flex: 1; }
+@media (min-width: 992px) {
+    main.with-sidebar { margin-left: var(--sidebar-width); }
+}
+
+/* =========================================================
+   Cards & Layout
+   ========================================================= */
+.card, .stat-card, .feature-card, .content-card, .auth-card, .chat-window, .quiz-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+}
+.card {
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stat-card {
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+.stat-card .stat-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+.stat-card .stat-value { font-size: 1.55rem; font-weight: 800; }
+.stat-card .stat-label { color: var(--brand-text-muted); font-size: 0.82rem; font-weight: 500; }
+
+.bg-primary-soft { background-color: rgba(37, 99, 235, 0.1); color: var(--brand-primary); }
+.bg-secondary-soft { background-color: rgba(14, 165, 233, 0.1); color: var(--brand-secondary); }
+.bg-success-soft { background-color: rgba(16, 185, 129, 0.1); color: var(--brand-success); }
+.bg-warning-soft { background-color: rgba(245, 158, 11, 0.1); color: #D97706; }
+.bg-danger-soft { background-color: rgba(239, 68, 68, 0.1); color: var(--brand-danger); }
+
+/* =========================================================
+   Code Studio
+   ========================================================= */
+.code-editor-box {
+    background-color: #0F172A;
+    border-radius: 12px;
+    font-family: 'Consolas', 'Fira Code', monospace;
+    border: 1px solid #1E293B;
+}
+.code-editor-box textarea {
+    background: transparent;
+    color: #F8FAFC;
+    border: none;
+    outline: none;
+    width: 100%;
+    min-height: 290px;
+    font-family: inherit;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    resize: vertical;
+    padding: 1rem;
+}
+.console-output {
+    background-color: #080D1A;
+    color: #38BDF8;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: 0.88rem;
+    min-height: 80px;
+    white-space: pre-wrap;
+}
+
+/* =========================================================
+   Mock Interview
+   ========================================================= */
+.question-card {
+    border-left: 4px solid var(--brand-primary);
+    background-color: rgba(37, 99, 235, 0.04);
+}
+.score-circle {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    border: 3.5px solid var(--brand-primary);
+    background-color: var(--card-bg);
+}
+
+/* =========================================================
+   Career Roadmap
+   ========================================================= */
+.roadmap-timeline {
+    position: relative;
+    padding-left: 2.25rem;
+}
+.roadmap-timeline::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    left: 15px;
+    width: 3px;
+    background: linear-gradient(180deg, var(--brand-primary), var(--brand-secondary));
+    border-radius: 999px;
+}
+.roadmap-node {
+    position: relative;
+    margin-bottom: 1.75rem;
+}
+.roadmap-node-badge {
+    position: absolute;
+    left: -2.25rem;
+    top: 4px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--brand-primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    box-shadow: 0 0 0 3px var(--card-bg);
+}
+.roadmap-node.completed .roadmap-node-badge {
+    background-color: var(--brand-success);
+}
+
+/* =========================================================
+   Leaderboard Podium
+   ========================================================= */
+.podium-card {
+    text-align: center;
+    padding: 1.5rem 1rem;
+    border-radius: 14px;
+    position: relative;
+}
+.podium-1 {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(234, 179, 8, 0.04));
+    border: 2px solid #F59E0B;
+}
+.podium-2 {
+    background: linear-gradient(135deg, rgba(148, 163, 184, 0.12), rgba(203, 213, 225, 0.04));
+    border: 2px solid #94A3B8;
+}
+.podium-3 {
+    background: linear-gradient(135deg, rgba(217, 119, 6, 0.12), rgba(180, 83, 9, 0.04));
+    border: 2px solid #D97706;
+}
+
+/* =========================================================
+   Chat Window (AI Mentor)
+   ========================================================= */
+.chat-window {
+    height: 52vh;
+    min-height: 320px;
+    overflow-y: auto;
+    padding: 1.25rem;
+}
+.chat-bubble {
+    max-width: 78%;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+}
+.chat-bubble.user {
+    background-color: var(--brand-primary);
+    color: #fff;
+    margin-left: auto;
+    border-bottom-right-radius: 3px;
+}
+.chat-bubble.bot {
+    background-color: var(--card-bg-subtle);
+    color: var(--brand-text);
+    margin-right: auto;
+    border-bottom-left-radius: 3px;
+    border: 1px solid var(--border-color);
+}
+
+/* =========================================================
+   Footer (Team Code Ninja)
+   ========================================================= */
+.code-ninja-footer {
+    background-color: var(--card-bg);
+    border-top: 1px solid var(--border-color);
+    padding: 1.25rem 1.5rem;
+    font-size: 0.85rem;
+    color: var(--brand-text-muted);
+}
+.code-ninja-footer.with-sidebar {
+    margin-left: 0;
+}
+@media (min-width: 992px) {
+    .code-ninja-footer.with-sidebar {
+        margin-left: var(--sidebar-width);
+    }
+}
+.code-ninja-badge {
+    background: linear-gradient(135deg, #1E293B, #0F172A);
+    color: #38BDF8;
+    padding: 0.25rem 0.65rem;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.78rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+/* =========================================================
+   Progress & Miscellaneous
+   ========================================================= */
+.progress { border-radius: 999px; background-color: rgba(37, 99, 235, 0.1); height: 8px; }
+.progress-bar { background-color: var(--brand-primary); }
+.certificate-box {
+    border: 2px dashed var(--brand-primary);
+    border-radius: 14px;
+    padding: 1.5rem;
+}
+@media print {
+    body * { visibility: hidden; }
+    .certificate-box, .certificate-box * { visibility: visible; }
+    .certificate-box { position: absolute; top: 0; left: 0; width: 100%; }
+}
